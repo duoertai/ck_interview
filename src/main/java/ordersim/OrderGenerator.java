@@ -15,10 +15,6 @@ import java.util.List;
 import java.util.Scanner;
 
 public class OrderGenerator {
-    // TODO: move to config file
-    private static String filePath = "/Users/ertaiduo/Projects/interview/src/main/resources/orders.json";
-    private static int ingestionRate = 2;
-
     public static List<Order> generateOrders(String filePath) {
         List<Order> orders = new ArrayList<>();
         try {
@@ -44,8 +40,8 @@ public class OrderGenerator {
     }
 
     public void sendOrderToKitchen(Kitchen kitchen, CourierDispatcher courierDispatcher) {
-        List<Order> orders = generateOrders(filePath);
-        double interval = 1000 / ingestionRate;
+        List<Order> orders = generateOrders(Config.ORDERS_JSON);
+        double interval = 1000 * 1.0 / Config.INGESTION_RATE;
 
         try {
             for (Order order : orders) {
@@ -68,7 +64,7 @@ public class OrderGenerator {
     }
 
     public static void main(String[] args) {
-        List<Order> orders = generateOrders(filePath);
+        List<Order> orders = generateOrders(Config.ORDERS_JSON);
         for (Order order : orders) {
             System.out.println(order.getId());
             System.out.println(order.getName());

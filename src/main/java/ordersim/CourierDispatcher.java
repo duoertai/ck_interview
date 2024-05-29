@@ -7,10 +7,8 @@ import java.util.List;
 import java.util.Random;
 
 public class CourierDispatcher {
-    private static int minTimeToArriveSeconds = 2;
-    private static int maxTimeToArriveSeconds = 6;
-    private ShelvesManager shelvesManager;
-    private List<Thread> threads;
+    private final ShelvesManager shelvesManager;
+    private final List<Thread> threads;
 
     public CourierDispatcher(ShelvesManager shelvesManager) {
         this.shelvesManager = shelvesManager;
@@ -27,7 +25,7 @@ public class CourierDispatcher {
         System.out.println(currentTime + "[CourierDispatcher] Dispatched courier for order: " + id);
 
         Random random = new Random();
-        int timeToArrive = random.nextInt(maxTimeToArriveSeconds * 1000 - minTimeToArriveSeconds * 1000 + 1) + minTimeToArriveSeconds * 1000;
+        int timeToArrive = random.nextInt(Config.MAX_TIME_TO_ARRIVE_SECONDS * 1000 - Config.MIN_TIME_TO_ARRIVE_SECONDS * 1000 + 1) +Config.MIN_TIME_TO_ARRIVE_SECONDS * 1000;
         FetchOrderTask fetchOrderTask = new FetchOrderTask(shelvesManager, id, timeToArrive);
         Thread thread = new Thread(fetchOrderTask);
         thread.start();
