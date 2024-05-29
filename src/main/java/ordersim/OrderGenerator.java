@@ -8,12 +8,16 @@ import com.google.gson.reflect.TypeToken;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.lang.reflect.Type;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
 public class OrderGenerator {
+    // TODO: move to config file
     private static String filePath = "/Users/ertaiduo/Projects/interview/src/main/resources/orders.json";
+    private static int ingestionRate = 2;
 
     public static List<Order> generateOrders(String filePath) {
         List<Order> orders = new ArrayList<>();
@@ -37,6 +41,30 @@ public class OrderGenerator {
         }
 
         return orders;
+    }
+
+    public void sendOrderToKitchen(Kitchen kitchen, CourierDispatcher courierDispatcher) {
+        List<Order> orders = generateOrders(filePath);
+        double interval = 1000 / ingestionRate;
+
+        try {
+            for (Order order : orders) {
+                Thread.sleep((long) interval);
+                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+                String currentTime = LocalDateTime.now().format(formatter);
+
+                System.out.println(currentTime + "[OrderGenerator] Sending order: " + order.getId() + " to kitchen");
+                kitchen.receiveOrder(order);
+                courierDispatcher.dispatchOrder(order.getId());
+            }
+
+            List<Thread> threads = courierDispatcher.getThreads();
+            for (Thread thread : threads) {
+                thread.join();
+            }
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
     }
 
     public static void main(String[] args) {

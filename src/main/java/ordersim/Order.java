@@ -6,6 +6,7 @@ public class Order {
     private Temperature temp;
     private int shelfLife;
     private double decayRate;
+    private long createdTime;
 
     public Order(String id, String name, Temperature temperature, int shelfLife, double decayRate) {
         this.id = id;
@@ -33,5 +34,13 @@ public class Order {
 
     public double getDecayRate() {
         return decayRate;
+    }
+
+    public long getCreatedTime() {
+        return createdTime;
+    }
+
+    public void setCreatedTime(long createdTime) {
+        this.createdTime = createdTime;
     }
 }
