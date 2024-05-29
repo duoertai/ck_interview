@@ -144,19 +144,7 @@ public class ShelvesManager {
         } else if (shelf == overflowShelf) {
             overflowShelfLock.lock();
             try {
-                List<Order> discardedOrders = overflowShelf.cleanup();
-                if (!discardedOrders.isEmpty()) {
-                    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-                    String currentTime = LocalDateTime.now().format(formatter);
-                    for (Order discardedOrder : discardedOrders) {
-                        System.out.println(currentTime + "[ShelvesManager] Cleanup order: " + discardedOrder.getId() + " from hot shelf");
-                    }
-
-                    for (Order discardedOrder : discardedOrders) {
-                        map.remove(discardedOrder.getId());
-                    }
-                    printShelves();
-                }
+                cleanup(overflowShelf);
                 order = overflowShelf.fetchOrder(orderId);
             } finally {
                 overflowShelfLock.unlock();

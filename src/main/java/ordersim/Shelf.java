@@ -10,9 +10,10 @@ public class Shelf {
 
     private int decayModifier;
 
-    public Shelf(int capacity, double decayRate) {
+    public Shelf(int capacity, int decayModifier) {
         this.capacity = capacity;
         this.orders = new ArrayList<>();
+        this.decayModifier = decayModifier;
     }
 
     public static Shelf createShelf(int capacity, int decayModifier) {
@@ -68,7 +69,7 @@ public class Shelf {
         long createdTime = order.getCreatedTime();
         long shelfLife = order.getShelfLife();
         double decayRate = order.getDecayRate();
-        double value = (1.0 * shelfLife - (currentTime - createdTime) - decayRate * (currentTime - shelfTime) * decayModifier) / (1.0 * shelfLife);
+        double value = (1.0 * shelfLife  - (currentTime - createdTime) - decayRate * (currentTime - shelfTime) * decayModifier) / (1.0 * shelfLife);
 
         System.out.println("Order id: " + order.getId() + ", Value: " + value);
 
