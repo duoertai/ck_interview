@@ -3,14 +3,14 @@ package ordersim;
 public class Order {
     private String id;
     private String name;
-    private Temperature temperature;
+    private Temperature temp;
     private int shelfLife;
     private double decayRate;
 
     public Order(String id, String name, Temperature temperature, int shelfLife, double decayRate) {
         this.id = id;
         this.name = name;
-        this.temperature = temperature;
+        this.temp = temperature;
         this.shelfLife = shelfLife;
         this.decayRate = decayRate;
     }
@@ -24,7 +24,7 @@ public class Order {
     }
 
     public Temperature getTemperature() {
-        return temperature;
+        return temp;
     }
 
     public int getShelfLife() {
