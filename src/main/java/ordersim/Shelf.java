@@ -75,4 +75,21 @@ public class Shelf {
 
         return value;
     }
+
+    public int getSize() {
+        return orders.size();
+    }
+
+    public int getCapacity() {
+        return capacity;
+    }
+
+    public Order findOrder(Temperature temperature) {
+        for (Order order : orders) {
+            if (order.getTemperature() == temperature) {
+                return order;
+            }
+        }
+        return null;
+    }
 }

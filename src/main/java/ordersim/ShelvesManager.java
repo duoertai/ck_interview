@@ -92,9 +92,15 @@ public class ShelvesManager {
                     System.out.println(currentTime + "[ShelvesManager] Added order: " + order.getId() + " to overflow shelf");
                     printShelves();
                 } else {
-                    Order removedOrder = overflowShelf.discardOrder();
-                    System.out.println(currentTime + "[ShelvesManager] Discarded order: " + removedOrder.getId() + " from overflow shelf");
-                    printShelves();
+                    //check if there is room for temperature
+                    boolean succeedToMakeRoom = makeRoomForOrder(order);
+
+                    if (!succeedToMakeRoom) {
+                        Order removedOrder = overflowShelf.discardOrder();
+                        System.out.println(currentTime + "[ShelvesManager] Discarded order: " + removedOrder.getId() + " from overflow shelf");
+                        printShelves();
+                    }
+
                     success = overflowShelf.addOrder(order);
                     if (success) {
                         map.put(order.getId(), overflowShelf);
@@ -108,6 +114,29 @@ public class ShelvesManager {
                 overflowShelfLock.unlock();
             }
         }
+    }
+
+    // when calling this, overflow shelf lock is already acquired
+    public boolean makeRoomForOrder(Order order) {
+        if (order.getTemperature() == Temperature.HOT) {
+            coldShelfLock.lock();
+            try {
+                if (coldShelf.getSize() < coldShelf.getCapacity()) {
+                    Order removedOrder = overflowShelf.findOrder(Temperature.COLD);
+                    if (removedOrder != null) {
+                        coldShelf.addOrder(removedOrder);
+                        map.put(removedOrder.getId(), coldShelf);
+                        return true;
+                    }
+                }
+            } finally {
+                coldShelfLock.unlock();
+            }
+
+        }
+        // other cases
+
+        return false;
     }
 
     public Order fetchOrderFromShelf(String orderId) {
@@ -176,10 +205,10 @@ public class ShelvesManager {
     }
 
     public void printShelves() {
+        overflowShelfLock.lock();
         hotShelfLock.lock();
         coldShelfLock.lock();
         frozenShelfLock.lock();
-        overflowShelfLock.lock();
         try {
             System.out.println("--------------------------------------------------");
             System.out.println("Hot shelf:");
@@ -195,10 +224,10 @@ public class ShelvesManager {
             overflowShelf.printOrders();
             System.out.println("--------------------------------------------------");
         } finally {
+            overflowShelfLock.unlock();
             hotShelfLock.unlock();
             coldShelfLock.unlock();
             frozenShelfLock.unlock();
-            overflowShelfLock.unlock();
         }
     }
 }
