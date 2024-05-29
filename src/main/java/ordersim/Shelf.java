@@ -17,6 +17,12 @@ public class Shelf {
         return new Shelf(capacity);
     }
 
+    public void printOrders() {
+        for (Order order : orders) {
+            System.out.println(order.getId());
+        }
+    }
+
     // if the shelf is full, return false
     public boolean addOrder(Order order) {
         if (orders.size() < capacity) {

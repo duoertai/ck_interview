@@ -73,26 +73,27 @@ public class ShelvesManager {
             String currentTime = LocalDateTime.now().format(formatter);
 
             System.out.println(currentTime + "[ShelvesManager] Added order: " + order.getId() + " to shelf");
+            printShelves();
         } else {
             overflowShelfLock.lock();
             try {
+                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+                String currentTime = LocalDateTime.now().format(formatter);
+
                 success = overflowShelf.addOrder(order);
                 if (success) {
-                    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-                    String currentTime = LocalDateTime.now().format(formatter);
-
                     map.put(order.getId(), overflowShelf);
                     System.out.println(currentTime + "[ShelvesManager] Added order: " + order.getId() + " to overflow shelf");
+                    printShelves();
                 } else {
-                    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-                    String currentTime = LocalDateTime.now().format(formatter);
-
                     Order removedOrder = overflowShelf.discardOrder();
                     System.out.println(currentTime + "[ShelvesManager] Discarded order: " + removedOrder.getId() + " from overflow shelf");
+                    printShelves();
                     success = overflowShelf.addOrder(order);
                     if (success) {
                         map.put(order.getId(), overflowShelf);
                         System.out.println(currentTime + "[ShelvesManager] Added order: " + order.getId() + " to overflow shelf");
+                        printShelves();
                     } else {
                         throw new RuntimeException("This should not happen");
                     }
@@ -142,8 +143,36 @@ public class ShelvesManager {
 
         if (order != null) {
             map.remove(orderId);
+            printShelves();
         }
 
         return order;
+    }
+
+    public void printShelves() {
+        hotShelfLock.lock();
+        coldShelfLock.lock();
+        frozenShelfLock.lock();
+        overflowShelfLock.lock();
+        try {
+            System.out.println("--------------------------------------------------");
+            System.out.println("Hot shelf:");
+            hotShelf.printOrders();
+            System.out.println("--------------------------------------------------");
+            System.out.println("Cold shelf:");
+            coldShelf.printOrders();
+            System.out.println("--------------------------------------------------");
+            System.out.println("Frozen shelf:");
+            frozenShelf.printOrders();
+            System.out.println("--------------------------------------------------");
+            System.out.println("Overflow shelf:");
+            overflowShelf.printOrders();
+            System.out.println("--------------------------------------------------");
+        } finally {
+            hotShelfLock.unlock();
+            coldShelfLock.unlock();
+            frozenShelfLock.unlock();
+            overflowShelfLock.unlock();
+        }
     }
 }
