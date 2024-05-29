@@ -18,6 +18,7 @@ public class ShelvesManager {
     private Lock frozenShelfLock;
     private Lock overflowShelfLock;
 
+    // id -> shelf, always update together with shelf after acquiring the lock
     Map<String, Shelf> map;
 
     public ShelvesManager(int hotCapacity, int coldCapacity, int frozenCapacity, int overflowCapacity) {

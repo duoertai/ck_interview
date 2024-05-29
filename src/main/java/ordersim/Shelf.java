@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
+// all methods should be used after acquiring the lock
 public class Shelf {
     private int capacity;
     private List<Order> orders;
